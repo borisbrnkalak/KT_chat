@@ -14,8 +14,35 @@ const socketIO = require("socket.io")(http, {
   },
 });
 
+const fs = require("fs");
+const messages = JSON.parse(
+  fs.readFileSync("messages.json", { encoding: "utf8" }) || ""
+);
+function saveToFIle(jsonContent) {
+  fs.writeFile("messages.json", jsonContent, "utf8", function (err) {
+    if (err) {
+      console.log("An error occured while writing JSON Object to File.");
+      return console.log(err);
+    }
+
+    console.log("JSON file has been saved.");
+  });
+}
+
 socketIO.on("connection", (socket) => {
   console.log(`⚡: ${socket.id} user just connected!`);
+
+  console.log(messages);
+  socket.on("get-all-messages", () => {
+    socketIO.emit("all-messages", messages);
+  });
+
+  socket.on("message", (data) => {
+    messages.push(data);
+    saveToFIle(JSON.stringify(messages));
+    socketIO.emit("received-message", data);
+  });
+
   socket.on("disconnect", () => {
     console.log("🔥: A user disconnected");
   });
