@@ -32,15 +32,16 @@ function saveToFIle(jsonContent) {
 socketIO.on("connection", (socket) => {
   console.log(`⚡: ${socket.id} user just connected!`);
 
-  console.log(messages);
   socket.on("get-all-messages", () => {
     socketIO.emit("all-messages", messages);
   });
 
   socket.on("message", (data) => {
-    messages.push(data);
+    const dataWithDate = { ...data, date: new Date() };
+    messages.push(dataWithDate);
     saveToFIle(JSON.stringify(messages));
-    socketIO.emit("received-message", data);
+    console.log(messages);
+    socketIO.emit("received-message", dataWithDate);
   });
 
   socket.on("disconnect", () => {

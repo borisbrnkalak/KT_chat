@@ -20,7 +20,6 @@ const Chat = () => {
 
   useEffect(() => {
     socket.on("all-messages", (messages) => {
-      //console.log(messages);
       setMessages(messages);
     });
     socket.on("received-message", (message) => {
@@ -54,6 +53,15 @@ const Chat = () => {
               {message.name}
             </span>
             <p className="">{message.text}</p>
+            <span
+              className={`${
+                username === message.name
+                  ? "text-slate-700 text-sm"
+                  : "text-slate-400 text-sm"
+              }`}
+            >
+              {new Date(message.date).toLocaleString()}
+            </span>
           </div>
         ))}
       </div>
